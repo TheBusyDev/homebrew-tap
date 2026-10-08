@@ -10,21 +10,25 @@ cask "ventoy" do
   desc "Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files"
   homepage "https://www.ventoy.net/"
 
+  executables = %w[Ventoy2Disk.sh VentoyWeb.sh VentoyPlugson.sh VentoyGUI]
+
   livecheck do
     url :url
     strategy :github_latest
   end
 
-  %w[Ventoy2Disk.sh VentoyWeb.sh VentoyPlugson.sh VentoyGUI].each do |exec|
+  executables.each do |exec|
     command_wrapper exec.delete_suffix(".sh").downcase,
                     content: <<~SH
                       #!/bin/bash
-                      cd "#{staged_path}/ventoy-#{version}" && exec ./#{exec} "$@"
+                      cd "#{staged_path}" && exec ./#{exec} "$@"
                     SH
   end
 
   postflight_steps do
-    move "ventoy-#{version}/VentoyGUI.#{arch}", "ventoy-#{version}/VentoyGUI"
+    move_contents "ventoy-#{version}", "."
+    remove "ventoy-#{version}"
+    symlink "VentoyGUI.#{arch}", "VentoyGUI" # Create a symbolic link for the correct architecture.
   end
 
   caveats do
