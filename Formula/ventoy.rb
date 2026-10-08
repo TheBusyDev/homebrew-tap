@@ -15,22 +15,22 @@ class Ventoy < Formula
   def install
     # Determine target architecture.
     arch = if Hardware::CPU.is_32_bit?
-             "i386"
-           elsif Hardware::CPU.arm?
-             "aarch64"
-           elsif Hardware::CPU.intel?
-             "x86_64"
-           else
-             "mips64el"
-           end
+      "i386"
+    elsif Hardware::CPU.arm?
+      "aarch64"
+    elsif Hardware::CPU.intel?
+      "x86_64"
+    else
+      "mips64el"
+    end
 
     # Remove binaries for other architectures and rename the correct GUI binary.
     Dir.glob("VentoyGUI.*").each do |file|
-      rm_f file unless file.end_with?(arch)
+      rm file unless file.end_with?(arch)
     end
 
     Dir.glob("tool/*").each do |dir|
-      rm_rf dir unless dir.end_with?(arch)
+      rm_r dir unless dir.end_with?(arch)
     end
 
     mv "VentoyGUI.#{arch}", "VentoyGUI"
