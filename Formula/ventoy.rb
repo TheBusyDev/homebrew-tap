@@ -1,5 +1,5 @@
 class Ventoy < Formula
-  desc "Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files (maintained by TheBusyDev)"
+  desc "Create bootable USB drives files with ease (maintained by TheBusyDev)"
   homepage "https://www.ventoy.net"
   url "https://github.com/ventoy/Ventoy/releases/download/v1.1.17/ventoy-1.1.17-linux.tar.gz"
   sha256 "7fb4ed08cef6a6b4d39dd19260d8c80291a78dfdf9af7d461571e23cbbc43805"
