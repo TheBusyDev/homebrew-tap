@@ -42,7 +42,7 @@ class Ventoy < Formula
       #!/bin/bash
       cd "#{libexec}" && exec ./#{gui_exec} "$@"
     EOF
-    (bin/gui_exec).chmod 0755
+    (bin/"ventoygui").chmod 0755
   end
 
   def caveats
