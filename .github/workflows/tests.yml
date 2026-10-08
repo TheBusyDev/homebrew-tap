@@ -7,8 +7,6 @@ on:
       - main
   pull_request:
 
-permissions: {}
-
 defaults:
   run:
     shell: bash -xeuo pipefail {0}
@@ -17,19 +15,14 @@ jobs:
   test-bot:
     strategy:
       matrix:
-        os: [ macos-26 ]
-        include:
-          - os: ubuntu-latest
-            container:
-              image: ghcr.io/homebrew/brew:main
-              options: --privileged
+        os: [ ubuntu-24.04, macos-26 ]
     runs-on: ${{ matrix.os }}
-    container: ${{ fromJSON(toJSON(matrix.container)) }} # zizmor: ignore[unpinned-images]
     permissions:
       actions: read
       checks: read
       contents: read
       pull-requests: read
+
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
