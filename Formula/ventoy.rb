@@ -1,8 +1,8 @@
 class Ventoy < Formula
   desc "Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files (maintained by TheBusyDev)"
   homepage "https://www.ventoy.net"
-  url "https://github.com/ventoy/Ventoy/releases/download/v1.1.05/ventoy-1.1.05-linux.tar.gz"
-  sha256 "3379c99890359dcff55aab7f7b3286f87c988d1da2fd616e6a9e305fb0a1de9e"
+  url "https://github.com/ventoy/Ventoy/releases/download/v1.1.17/ventoy-1.1.17-linux.tar.gz"
+  sha256 "7fb4ed08cef6a6b4d39dd19260d8c80291a78dfdf9af7d461571e23cbbc43805"
   license "GPL-3.0-or-later"
 
   livecheck do
