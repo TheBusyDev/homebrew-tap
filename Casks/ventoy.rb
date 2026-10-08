@@ -10,17 +10,17 @@ cask "ventoy" do
   desc "Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files"
   homepage "https://www.ventoy.net/"
 
+  livecheck do
+    url :url
+    strategy :github_latest
+  end
+
   artifact "ventoygui.desktop",
            target: "#{Dir.home}/.local/share/applications/ventoygui.desktop"
   artifact "WebUI/static/img/VentoyLogo.png",
            target: "#{Dir.home}/.local/share/icons/ventoy.png"
 
   executables = %w[Ventoy2Disk.sh VentoyWeb.sh VentoyPlugson.sh VentoyGUI]
-
-  livecheck do
-    url :url
-    strategy :github_latest
-  end
 
   executables.each do |exec|
     command_wrapper exec.delete_suffix(".sh").downcase,
