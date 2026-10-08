@@ -53,19 +53,21 @@ jobs:
       - name: Install, Test, and Audit Formulae (Skip Linkage)
         if: github.event_name == 'pull_request'
         run: |
-          # Loop dynamically through all repo formulae.
+          cd "$(brew --repo ${{ github.repository }})"
+          shopt -s nullglob # Prevent the loop from running on a literal string if no files exist.
+
+          # Loop through all formulae in the tap.
           for file in Formula/*.rb; do
-            if [[ -f "$file" ]]; then
-              formula="$(basename "$file" .rb)"
-              echo "=== Processing $formula ==="
+            formula=$(basename "$file" .rb)
+            full_formula="${{ github.repository }}/$formula"
+            echo "=== Processing $formula ==="
 
-              echo "-> Installing $formula"
-              brew install "$formula"
+            echo "-> Installing $formula..."
+            brew install "$full_formula"
 
-              echo "-> Testing $formula"
-              brew test "$formula"
+            echo "-> Testing $formula..."
+            brew test "$full_formula"
 
-              echo "-> Auditing $formula"
-              brew audit --strict "$formula"
-            fi
+            echo "-> Auditing $formula..."
+            brew audit --strict "$full_formula"
           done
