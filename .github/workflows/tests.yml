@@ -60,14 +60,20 @@ jobs:
           for file in Formula/*.rb; do
             formula=$(basename "$file" .rb)
             full_formula="${{ github.repository }}/$formula"
-            echo "=== Processing $formula ==="
 
-            echo "-> Installing $formula..."
+            # Test: Ensure the formula explicitly requires Linux.
+            if ! grep -q 'depends_on :linux' "$file"; then
+              echo "::error file=$file::Formula $formula is missing 'depends_on :linux'."
+              exit 1
+            fi
+
+            # Test: Ensure the formula does not explicitly support macOS
+            if grep -q 'depends_on :macos' "$file"; then
+              echo "::error file=$file::Formula $formula must not support macOS."
+              exit 1
+            fi
+
             brew install "$full_formula"
-
-            echo "-> Testing $formula..."
             brew test "$full_formula"
-
-            echo "-> Auditing $formula..."
             brew audit --strict "$full_formula"
           done
