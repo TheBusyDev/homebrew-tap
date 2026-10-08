@@ -17,26 +17,43 @@ class Ventoy < Formula
     libexec.install Dir["*"]
 
     # Expose the CLI tools to user's PATH.
-    bin.install_symlink libexec/"Ventoy2Disk.sh" => "ventoy2disk"
-    bin.install_symlink libexec/"VentoyWeb.sh" => "ventoyweb"
+    libexec.glob("*.sh").each do |script|
+      exec = script.basename(".sh").downcase
+
+      (bin/exec).write <<~EOF
+        #!/bin/bash
+        cd "#{libexec}" && exec ./#{exec} "$@"
+      EOF
+      (bin/exec).chmod 0755
+    end
 
     # Symlink architecture-specific GUI binary.
-    if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      bin.install_symlink libexec/"VentoyGUI.x86_64" => "ventoygui"
-    elsif Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      bin.install_symlink libexec/"VentoyGUI.aarch64" => "ventoygui"
+    gui_exec = ""
+
+    if Hardware::CPU.is_32_bit?
+      gui_exec = "VentoyGUI.i386"
+    elsif Hardware::CPU.intel?
+      gui_exec = "VentoyGUI.x86_64"
+    elsif Hardware::CPU.arm?
+      gui_exec = "VentoyGUI.aarch64"
     end
+
+    (bin/"ventoygui").write <<~EOF
+      #!/bin/bash
+      cd "#{libexec}" && exec ./#{gui_exec} "$@"
+    EOF
+    (bin/gui_exec).chmod 0755
   end
 
   def caveats
     <<~EOS
-      Ventoy may require root privileges to run.
+      You can run the Ventoy GUI by calling:
+      >>> ventoygui # sudo privileges may be required.
     EOS
   end
 
   test do
-    assert_predicate libexec/"Ventoy2Disk.sh", :exist?
-    assert_predicate libexec/"VentoyWeb.sh", :exist?
+    assert_predicate libexec/"VentoyGUI.i386", :exist?
     assert_predicate libexec/"VentoyGUI.x86_64", :exist?
     assert_predicate libexec/"VentoyGUI.aarch64", :exist?
   end
