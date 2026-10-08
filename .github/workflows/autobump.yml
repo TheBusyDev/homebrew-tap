@@ -2,6 +2,7 @@
 name: brew bump
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
