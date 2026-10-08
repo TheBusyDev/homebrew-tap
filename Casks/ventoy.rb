@@ -10,6 +10,11 @@ cask "ventoy" do
   desc "Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files"
   homepage "https://www.ventoy.net/"
 
+  artifact "ventoygui.desktop",
+           target: "#{Dir.home}/.local/share/applications/ventoygui.desktop"
+  artifact "WebUI/static/img/VentoyLogo.png",
+           target: "#{Dir.home}/.local/share/icons/ventoy.png"
+
   executables = %w[Ventoy2Disk.sh VentoyWeb.sh VentoyPlugson.sh VentoyGUI]
 
   livecheck do
@@ -29,6 +34,22 @@ cask "ventoy" do
     move_contents "ventoy-#{version}", "."
     remove "ventoy-#{version}"
     symlink "VentoyGUI.#{arch}", "VentoyGUI" # Create a symbolic link for the correct architecture.
+
+    mkdir_p ".local/share/applications", base: :home
+    mkdir_p ".local/share/icons", base: :home
+
+    write_file "ventoygui.desktop", <<~EOS
+      [Desktop Entry]
+      Name=Ventoy GUI
+      Comment=Create bootable USB drives for ISO/WIM/IMG/VHD(x)/EFI files.
+      Exec={{HOMEBREW_PREFIX}}/bin/ventoygui
+      Icon=ventoy
+      Keywords=usb;iso;bootable;
+      StartupNotify=true
+      Terminal=false
+      Type=Application
+      X-Categories=Utilities;
+    EOS
   end
 
   caveats do
