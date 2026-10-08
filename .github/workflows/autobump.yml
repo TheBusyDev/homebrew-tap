@@ -7,7 +7,6 @@ on:
       - main
     paths:
       - .github/workflows/autobump.yml
-
   schedule:
     interval: weekly
 
