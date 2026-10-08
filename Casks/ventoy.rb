@@ -25,7 +25,7 @@ cask "ventoy" do
                     SH
   end
 
-  postflight_steps do
+  preflight_steps do
     move_contents "ventoy-#{version}", "."
     remove "ventoy-#{version}"
     symlink "VentoyGUI.#{arch}", "VentoyGUI" # Create a symbolic link for the correct architecture.
