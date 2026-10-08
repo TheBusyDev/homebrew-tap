@@ -50,6 +50,8 @@ class Ventoy < Formula
     <<~EOS
       You can run the Ventoy GUI by calling:
       >>> ventoygui # sudo privileges may be required.
+      Other scripts are exposed to user's PATH, you can discover them by running:
+      >>> compgen -c | grep "ventoy"
     EOS
   end
 
