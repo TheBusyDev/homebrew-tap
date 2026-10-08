@@ -56,8 +56,8 @@ class Ventoy < Formula
   end
 
   test do
-    assert_predicate libexec/"VentoyGUI.i386", :exist?
-    assert_predicate libexec/"VentoyGUI.x86_64", :exist?
-    assert_predicate libexec/"VentoyGUI.aarch64", :exist?
+    assert_path_exists libexec/"VentoyGUI.i386"
+    assert_path_exists libexec/"VentoyGUI.x86_64"
+    assert_path_exists libexec/"VentoyGUI.aarch64"
   end
 end
