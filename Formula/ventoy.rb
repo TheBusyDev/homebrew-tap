@@ -39,8 +39,8 @@ class Ventoy < Formula
     libexec.install Dir["*"]
 
     # Expose the CLI tools to user's PATH.
-    libexec.glob("Ventoy{*.sh,GUI}").each do |exec|
-      exec = exec.basename
+    libexec.glob("Ventoy{*.sh,GUI}").each do |exec_path|
+      exec = exec_path.basename
       exec_name = exec.to_s.delete_suffix(".sh").downcase
 
       (bin/exec_name).write <<~EOF
