@@ -18,7 +18,7 @@ class Ventoy < Formula
 
     # Expose the CLI tools to user's PATH.
     libexec.glob("*.sh").each do |script|
-      script.basename!
+      script = script.basename
       exec = script.to_s.delete_suffix(".sh").downcase
 
       (bin/exec).write <<~EOF
