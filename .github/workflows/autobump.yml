@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/autobump.yml
   schedule:
-    interval: weekly
+    # Every Sunday at midnight.
+    - cron: '0 0 * * 0'
 
 defaults:
   run:
