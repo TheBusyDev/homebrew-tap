@@ -2,16 +2,13 @@
 name: brew bump
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/autobump.yml
   schedule:
-    # Every day at 9:45 UTC
-    - cron: 45 9 * * *
-
-permissions: {}
+    # Every Sunday at midnight.
+    - cron: '0 0 * * 0'
 
 defaults:
   run:
@@ -19,10 +16,11 @@ defaults:
 
 jobs:
   autobump:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
+
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew

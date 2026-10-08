@@ -2,12 +2,11 @@
 name: brew test-bot
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
   pull_request:
-
-permissions: {}
 
 defaults:
   run:
@@ -19,7 +18,7 @@ jobs:
       matrix:
         os: [ macos-26 ]
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             container:
               image: ghcr.io/homebrew/brew:main
               options: --privileged
@@ -30,6 +29,7 @@ jobs:
       checks: read
       contents: read
       pull-requests: read
+
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew

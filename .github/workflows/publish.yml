@@ -10,15 +10,13 @@ on:
       head_sha:
         description: Expected pull request head commit SHA (optional)
 
-permissions: {}
-
 defaults:
   run:
     shell: bash -xeuo pipefail {0}
 
 jobs:
   pr-pull:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       attestations: write
@@ -27,6 +25,7 @@ jobs:
       id-token: write
       issues: read
       pull-requests: write
+
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
