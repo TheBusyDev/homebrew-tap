@@ -7,11 +7,9 @@ on:
       - main
     paths:
       - .github/workflows/autobump.yml
-  schedule:
-    # Every day at 9:45 UTC
-    - cron: 45 9 * * *
 
-permissions: {}
+  schedule:
+    interval: weekly
 
 defaults:
   run:
@@ -19,17 +17,16 @@ defaults:
 
 jobs:
   autobump:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
+
     steps:
       - name: Set up Homebrew
-        id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
 
       - name: Set up git
-        id: git_setup
         uses: Homebrew/actions/git-user-config@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
 
       - name: Bump formulae
