@@ -29,6 +29,8 @@ jobs:
       - name: Set up git
         id: git_setup
         uses: Homebrew/actions/git-user-config@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
+        with:
+          username: 'TheBusyDev'
 
       - name: Bump formulae and casks
         env:
