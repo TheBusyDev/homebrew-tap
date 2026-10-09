@@ -33,7 +33,5 @@ jobs:
       - name: Bump formulae and casks
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          HOMEBREW_GIT_COMMITTER_NAME: TheBusyDev
-          HOMEBREW_GIT_COMMITTER_EMAIL: 117039853+TheBusyDev@users.noreply.github.com
           TAP_NAME: ${{ steps.set-up-homebrew.outputs.tap-name }}
         run: brew bump --tap="$TAP_NAME" --full-name --open-pr --no-fork --bump-synced
