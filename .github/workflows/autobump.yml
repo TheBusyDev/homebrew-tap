@@ -36,7 +36,7 @@ jobs:
           HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
           TAP_NAME: ${{ steps.set-up-homebrew.outputs.tap-name }}
-        run: brew bump --tap="$TAP_NAME" --full-name --open-pr --no-fork --bump-synced
+        run: ./scripts/bump.sh
 
       - name: Auto-approve PR safely
         env:
