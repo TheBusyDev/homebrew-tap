@@ -18,9 +18,16 @@ SHA256_REGEX='^\s*sha256\s+("[a-z0-9]+"|arm:\s+"[a-z0-9]+",\\n\s*intel:\s+"[a-z0
 # Check for every PR in `pr_numbers`.
 mapfile -d ":" -t pr_numbers <<< "$1"
 failed_pr_urls="" # Newline-separated list of URLs for non-approved pull requests.
+success=true      # Have all the approvals run successfully?
 
 for pr_nr in "${pr_numbers[@]}"; do
   echo "==> Checking pull request #$pr_nr..."
+
+  if [[ ! "$pr_nr" =~ [0-9] ]]; then
+    echo "::error ::\"$pr_nr\" is not a valid PR number."
+    success=false
+    continue
+  fi
 
   # Get relevant info from PR.
   pr_json="$(gh pr view "$pr_nr" --json "headRefName,state,url,files")"
@@ -75,6 +82,7 @@ for pr_nr in "${pr_numbers[@]}"; do
   if ! $safe_to_approve; then
     # Append the PR URL to the failed ones.
     failed_pr_urls+="\n$pr_url"
+    success=false
   else
     # Finally, approve the PR.
     echo "==> Approving pull request #$pr_nr..."
@@ -87,7 +95,10 @@ failed_pr_urls="${failed_pr_urls#\\n}"
 
 if [[ -n "$failed_pr_urls" ]]; then
   echo -e "::error ::The following PRs require manual approval:\n$failed_pr_urls"
-  exit 1
+fi
+
+if ! $success; then
+  exi 1
 fi
 
 exit 0
