@@ -33,14 +33,14 @@ jobs:
       - name: Bump formulae and casks
         id: brew-bump
         env:
+          TAP_NAME: ${{ steps.set-up-homebrew.outputs.tap-name }}
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
           GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
-          TAP_NAME: ${{ steps.set-up-homebrew.outputs.tap-name }}
-        run: ./scripts/bump.sh
+        run: ./scripts/bump.sh "$TAP_NAME"
 
       - name: Auto-approve PRs safely
         env:
-          GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           PR_NUMBERS: ${{ steps.brew-bump.outputs.pr_numbers }}
-        run: ./scripts/approve.sh
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: ./scripts/approve.sh "$PR_NUMBERS"

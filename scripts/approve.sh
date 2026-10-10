@@ -1,11 +1,17 @@
 #!/bin/bash
 # Auto-approve some pull requests with certain criteria.
+#
+# Expected input variables:
+# - `PR_NUMBERS`: Colon-separated list of pull request numbers.
+#
 # Expected environment variables:
 # - `GITHUB_TOKEN`: Token used for authentication in `gh`.
-# - `PR_NUMBERS`: Colon-separated list of pull request numbers.
+#
 # TODO: add criteria list to README.md
 
 # Useful variables.
+# Colon-separated list of pull request numbers.
+PR_NUMBERS="$1"
 # Match `version` entries in `.rb` files.
 VERSION_REGEX='^\s*version\s+".*"$'
 # Match `sha256` entries in `.rb` files.
