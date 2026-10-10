@@ -34,27 +34,31 @@ for file in "${pr_files[@]}"; do
   fi
 
   # Extract URLs from the main branch and the PR branch.
-  old_urls=$(git show "origin/HEAD:$file" | grep -E "^\s+url\s+") \
+  old_urls=$(git show "origin/HEAD:$file" | grep -E "^\s*url\s+") \
     || {
       echo "::error file=$file::Failed to extract URLs from default brach."
       safe_to_approve=0
+      continue
     }
 
   new_urls=$(git show "origin/$pr_branch:$file" | grep -E "^\s+url\s+") \
     || {
       echo "::error file=$file::Failed to extract URLs from brach \`$pr_branch\`."
       safe_to_approve=0
+      continue
     }
 
   # Check for any modifications in URLs.
   if [[ -z "$old_urls" || -z "$new_urls" ]]; then
     echo "::error file=$file::Cannot retrieve URLs."
     safe_to_approve=0
+    continue
   fi
 
   if [[ "$old_urls" != "$new_urls" ]]; then
     echo "::error file=$file::The original URLs differs from the ones in the new PR."
     safe_to_approve=0
+    continue
   fi
 done
 
