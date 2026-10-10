@@ -1,15 +1,16 @@
 #!/bin/bash
 # Auto-approve some pull requests with certain criteria.
 # Expected environment variables:
-# - `PR_URL`: URL to the open pull request.
 # - `GH_TOKEN`: token used for authentication in `gh`.
 # TODO: add criteria list to README.md
 
-# Get state and number of the PR.
-pr_json="$(gh pr view "$PR_URL" --json "headRefName,number,state,files")"
+# Get relevant info from PR.
+pr_json="$(gh pr view --json "headRefName,number,state,url,files")"
 pr_branch="$(jq -r ".headRefName" <<< "$pr_json")"
 pr_number="$(jq -r ".number" <<< "$pr_json")"
 pr_state="$(jq -r ".state" <<< "$pr_json")"
+pr_url="$(jq -r ".url" <<< "$pr_json")"
+
 pr_state="${pr_state,,}"
 
 # Start checks on the PR.
@@ -58,11 +59,11 @@ for file in "${pr_files[@]}"; do
 done
 
 if ((! safe_to_approve)); then
-  echo "::error ::Manual approval is required. See the link: $PR_URL"
+  echo "::error ::Manual approval is required. See the link: $pr_url"
   exit 1
 fi
 
 # Finally, approve the PR.
-gh pr review --approve "$PR_URL"
+gh pr review --approve
 
 exit $?
