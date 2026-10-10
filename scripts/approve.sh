@@ -1,24 +1,22 @@
 #!/bin/bash
 # Auto-approve some pull requests with certain criteria.
 #
-# Expected input variables:
-# - `PR_NUMBERS`: Colon-separated list of pull request numbers.
-#
-# Expected environment variables:
+# Environment variables:
 # - `GITHUB_TOKEN`: Token used for authentication in `gh`.
+#
+# Input:
+# 1. Colon-separated list of pull request numbers.
 #
 # TODO: add criteria list to README.md
 
 # Useful variables.
-# Colon-separated list of pull request numbers.
-PR_NUMBERS="$1"
 # Match `version` entries in `.rb` files.
 VERSION_REGEX='^\s*version\s+".*"$'
 # Match `sha256` entries in `.rb` files.
 SHA256_REGEX='^\s*sha256\s+("[a-z0-9]+"|arm:\s+"[a-z0-9]+",\\n\s*intel:\s+"[a-z0-9]+")$'
 
-# Check for every PR in `PR_NUMBERS``.
-mapfile -d ":" -t pr_numbers <<< "$PR_NUMBERS"
+# Check for every PR in `pr_numbers`.
+mapfile -d ":" -t pr_numbers <<< "$1"
 failed_pr_urls="" # Newline-separated list of URLs for non-approved pull requests.
 
 for pr_nr in "${pr_numbers[@]}"; do
@@ -33,12 +31,12 @@ for pr_nr in "${pr_numbers[@]}"; do
   pr_state="${pr_state,,}"
 
   # Start checks on the PR.
-  safe_to_approve=1
+  safe_to_approve=true
 
   # Check the PR state.
   if [[ "$pr_state" != "open" ]]; then
     echo "::error ::The pull request #$pr_nr is not open."
-    safe_to_approve=0
+    safe_to_approve=false
   fi
 
   # Get the changed files and check them.
@@ -50,7 +48,7 @@ for pr_nr in "${pr_numbers[@]}"; do
     # Check if not only formula/cask files are modified.
     if [[ ! "$file" =~ ^(Formula|Casks)/.*\.rb$ ]]; then
       echo "::error file=$file::This PR does not modify \`.rb\` files only."
-      safe_to_approve=0
+      safe_to_approve=false
       continue
     fi
 
@@ -67,14 +65,14 @@ for pr_nr in "${pr_numbers[@]}"; do
       | grep -vE "$SHA256_REGEX" \
       || true)"
 
-    if [[ ! -z "$unauthorized_changes" ]]; then
+    if [[ -n "$unauthorized_changes" ]]; then
       echo "::error file=$file::Unauthorized changes found."
-      safe_to_approve=0
+      safe_to_approve=false
       continue
     fi
   done
 
-  if ((! safe_to_approve)); then
+  if ! $safe_to_approve; then
     # Append the PR URL to the failed ones.
     failed_pr_urls+="\n$pr_url"
   else
@@ -87,7 +85,7 @@ done
 failed_pr_urls="${failed_pr_urls%\\n}"
 failed_pr_urls="${failed_pr_urls#\\n}"
 
-if [[ ! -z "$failed_pr_urls" ]]; then
+if [[ -n "$failed_pr_urls" ]]; then
   echo -e "::error ::The following PRs require manual approval:\n$failed_pr_urls"
   exit 1
 fi
