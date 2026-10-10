@@ -10,6 +10,8 @@ mapfile -d ":" -t pr_numbers <<< "$PR_NUMBERS"
 failed_pr_urls="" # Newline-separated list of URLs for non-approved pull requests.
 
 for pr_nr in "${pr_numbers[@]}"; do
+  echo "==> Checking pull request #$pr_nr..."
+
   # Get relevant info from PR.
   pr_json="$(gh pr view "$pr_nr" --json "headRefName,state,url,files")"
   pr_branch="$(jq -r ".headRefName" <<< "$pr_json")"
@@ -23,7 +25,7 @@ for pr_nr in "${pr_numbers[@]}"; do
 
   # Check the PR state.
   if [[ "$pr_state" != "open" ]]; then
-    echo "::error ::The merge request #$pr_nr is not open."
+    echo "::error ::The pull request #$pr_nr is not open."
     safe_to_approve=0
   fi
 
@@ -31,6 +33,8 @@ for pr_nr in "${pr_numbers[@]}"; do
   mapfile -t pr_files < <(jq -r ".files[].path" <<< "$pr_json")
 
   for file in "${pr_files[@]}"; do
+    echo "==> Checking file \`$file\` from pull request #$pr_nr..."
+
     # Check if not only formula/cask files are modified.
     if [[ ! "$file" =~ ^(Formula|Casks)/.*\.rb$ ]]; then
       echo "::error file=$file::This PR does not modify \`.rb\` files only."
