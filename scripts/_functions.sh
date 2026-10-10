@@ -51,21 +51,14 @@ function casks_from_tap() {
 # 1. The fully-qualified name of the formula/cask.
 # 2. Literal string: "formula" or "cask".
 #
-# Output:
-# Writes the number of the pull request to stdout.
-#
 function _brew_bump_formula_or_cask() {
-  brew bump "$1" --"$2" --full-name --open-pr --no-fork > /dev/null 2>&1
-  gh pr view --json "number" | jq -r ".number"
+  brew bump "$1" --"$2" --full-name --open-pr --no-fork
 }
 
 # Bump the selected formula, creating a new pull request.
 #
 # Input:
 # 1. The fully-qualified name of the formula.
-#
-# Output:
-# Writes the number of the pull request to stdout.
 #
 function brew_bump_formula() {
   _brew_bump_formula_or_cask "$1" "formula"
@@ -76,11 +69,17 @@ function brew_bump_formula() {
 # Input:
 # 1. The fully-qualified name of the cask.
 #
+function brew_bump_cask() {
+  _brew_bump_formula_or_cask "$1" "cask"
+}
+
+# Obtain the number of the pull request from the current branch.
+#
 # Output:
 # Writes the number of the pull request to stdout.
 #
-function brew_bump_cask() {
-  _brew_bump_formula_or_cask "$1" "cask"
+function current_pr_number() {
+  gh pr view --json "number" | jq -r ".number"
 }
 
 # Retrieve JSON file from the selected formula/cask.

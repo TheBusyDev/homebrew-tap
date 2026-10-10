@@ -31,16 +31,16 @@ mapfile -t casks < <(casks_from_tap "$1")
 echo "==> Updating formulae..."
 
 for formula in "${formulae[@]}"; do
-  pr_nr="$(brew_bump_formula "$formula")"
-  pr_numbers+=":$pr_nr"
+  brew_bump_formula "$formula"
+  pr_numbers+=":$(current_pr_number)"
 done
 
 # Update casks from the given tap.
 echo "==> Updating casks..."
 
 for cask in "${casks[@]}"; do
-  pr_nr="$(brew_bump_cask "$cask")"
-  pr_numbers+=":$pr_nr"
+  brew_bump_cask "$cask"
+  pr_numbers+=":$(current_pr_number)"
 done
 
 # Export PR numbers.
