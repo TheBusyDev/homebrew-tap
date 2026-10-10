@@ -5,6 +5,12 @@
 # - `PR_NUMBERS`: Colon-separated list of pull request numbers.
 # TODO: add criteria list to README.md
 
+# Useful variables.
+# Match `version` entries in `.rb` files.
+VERSION_REGEX='^\s*version\s+".*"$'
+# Match `sha256` entries in `.rb` files.
+SHA256_REGEX='^\s*sha256\s+("[a-z0-9]+"|arm:\s+"[a-z0-9]+",\\n\s*intel:\s+"[a-z0-9]+")$'
+
 # Check for every PR in `PR_NUMBERS``.
 mapfile -d ":" -t pr_numbers <<< "$PR_NUMBERS"
 failed_pr_urls="" # Newline-separated list of URLs for non-approved pull requests.
@@ -42,30 +48,21 @@ for pr_nr in "${pr_numbers[@]}"; do
       continue
     fi
 
-    # Extract URLs from the main branch and the PR branch.
-    old_urls=$(git show "origin/HEAD:$file" | grep -E "^\s*url\s+") \
-      || {
-        echo "::error file=$file::Failed to extract URLs from default brach."
-        safe_to_approve=0
-        continue
-      }
+    # Check difference between files modified in PR and the ones on default branch.
+    all_changes="$(git diff -U0 "origin/main...origin/$pr_branch" -- "$file" \
+      | grep "^[+-]" \
+      | grep -v "^+++" \
+      | grep -v "^---" \
+      | sed "s/^[+-]//g" \
+      || true)"
 
-    new_urls=$(git show "origin/$pr_branch:$file" | grep -E "^\s+url\s+") \
-      || {
-        echo "::error file=$file::Failed to extract URLs from brach \`$pr_branch\`."
-        safe_to_approve=0
-        continue
-      }
+    unauthorized_changes="$(echo "$all_changes" \
+      | grep -vE "$VERSION_REGEX" \
+      | grep -vE "$SHA256_REGEX" \
+      || true)"
 
-    # Check for any modifications in URLs.
-    if [[ -z "$old_urls" || -z "$new_urls" ]]; then
-      echo "::error file=$file::Cannot retrieve URLs."
-      safe_to_approve=0
-      continue
-    fi
-
-    if [[ "$old_urls" != "$new_urls" ]]; then
-      echo "::error file=$file::The original URLs differs from the ones in the new PR."
+    if [[ ! -z "$unauthorized_changes" ]]; then
+      echo "::error file=$file::Unauthorized changes found."
       safe_to_approve=0
       continue
     fi
@@ -73,12 +70,16 @@ for pr_nr in "${pr_numbers[@]}"; do
 
   if ((! safe_to_approve)); then
     # Append the PR URL to the failed ones.
-    failed_pr_urls="$pr_url\n$failed_pr_urls"
+    failed_pr_urls+="\n$pr_url"
   else
     # Finally, approve the PR.
+    echo "==> Approving pull request #$pr_nr..."
     gh pr review "$pr_nr" --approve
   fi
 done
+
+failed_pr_urls="${failed_pr_urls%\\n}"
+failed_pr_urls="${failed_pr_urls#\\n}"
 
 if [[ ! -z "$failed_pr_urls" ]]; then
   echo -e "::error ::The following PRs require manual approval:\n$failed_pr_urls"

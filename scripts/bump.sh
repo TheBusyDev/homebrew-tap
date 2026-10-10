@@ -22,7 +22,7 @@ echo "==> Updating formulae..."
 for formula in "${formulae[@]}"; do
   brew bump "$TAP_NAME/$formula" --full-name --open-pr --no-fork
   pr_nr="$(gh pr view --json "number" | jq -r ".number")"
-  pr_numbers="$pr_nr:$pr_numbers"
+  pr_numbers+="$pr_nr:"
 done
 
 # Update casks from the given tap.
@@ -31,10 +31,12 @@ echo "==> Updating casks..."
 for cask in "${casks[@]}"; do
   brew bump "$TAP_NAME/$cask" --full-name --open-pr --no-fork
   pr_nr="$(gh pr view --json "number" | jq -r ".number")"
-  pr_numbers="$pr_nr:$pr_numbers"
+  pr_numbers+=":$pr_nr"
 done
 
 # Export PR numbers.
+pr_numbers="${pr_numbers%:}"
+pr_numbers="${pr_numbers#:}"
 echo "pr_numbers=\"$pr_numbers\"" >> "$GITHUB_OUTPUT"
 
 exit 0
