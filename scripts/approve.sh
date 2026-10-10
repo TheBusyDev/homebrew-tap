@@ -98,7 +98,7 @@ if [[ -n "$failed_pr_urls" ]]; then
 fi
 
 if ! $success; then
-  exi 1
+  exit 1
 fi
 
 exit 0
