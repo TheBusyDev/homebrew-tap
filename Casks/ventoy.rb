@@ -2,8 +2,8 @@ cask "ventoy" do
   arch arm: "aarch64", intel: "x86_64"
   os linux: "linux"
 
-  version "1.1.05"
-  sha256 "3379c99890359dcff55aab7f7b3286f87c988d1da2fd616e6a9e305fb0a1de9e"
+  version "1.1.18"
+  sha256 "d86ff9de63d94c8b8f1f6b14d23c55af4b88e8207bf2893890892a6a97b1ad54"
 
   url "https://github.com/ventoy/Ventoy/releases/download/v#{version}/ventoy-#{version}-linux.tar.gz"
   name "ventoy"
